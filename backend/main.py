@@ -39,6 +39,8 @@ class TaskCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: str = ""
     done: bool = False
+    priority: str = "medium"
+    due_date: str = ""
 
 
 class TaskOut(BaseModel):
@@ -46,6 +48,8 @@ class TaskOut(BaseModel):
     title: str
     description: str
     done: bool
+    priority: str
+    due_date: str
 
 
 def task_to_dict(task) -> dict:
@@ -54,6 +58,8 @@ def task_to_dict(task) -> dict:
         "title": task["title"],
         "description": task["description"],
         "done": task["done"],
+        "priority": task.get("priority", "medium"),
+        "due_date": task.get("due_date", ""),
     }
 
 

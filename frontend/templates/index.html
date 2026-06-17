@@ -8,12 +8,39 @@
 </head>
 <body>
   <div class="container">
-    <h1>Task Manager</h1>
+    <header class="header">
+      <div class="header-top">
+        <h1>Task Manager</h1>
+        <div class="stats">
+          <span id="statTotal">0 tasks</span>
+          <span class="stat-dot">&middot;</span>
+          <span id="statPct">0% done</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </header>
+
     <div id="status" class="status"></div>
+
     <div class="add-form">
       <input type="text" id="taskInput" placeholder="What needs to be done?" />
-      <button class="btn-add" onclick="addTask()">Add</button>
+      <select id="priorityInput" class="priority-select">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+      <input type="date" id="dueDateInput" class="date-input" />
+      <button class="btn-add" onclick="addTask()">+ Add</button>
     </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
+      <button class="filter-btn" onclick="setFilter('done', this)">Done</button>
+    </div>
+
     <ul class="task-list" id="taskList"></ul>
   </div>
 
