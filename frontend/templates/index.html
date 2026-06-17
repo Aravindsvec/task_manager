@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Task Manager</h1>
+    <div id="status" class="status"></div>
+    <div class="add-form">
+      <input type="text" id="taskInput" placeholder="What needs to be done?" />
+      <button class="btn-add" onclick="addTask()">Add</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

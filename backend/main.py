@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from bson import ObjectId
 from fastapi import FastAPI, HTTPException
@@ -6,19 +7,32 @@ from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="Task Manager API")
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+
+client: AsyncIOMotorClient | None = None
+db = None
+collection = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global client, db, collection
+    client = AsyncIOMotorClient(MONGO_URL)
+    db = client.taskmanager
+    collection = db.tasks
+    yield
+    client.close()
+
+
+app = FastAPI(title="Task Manager API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client.taskmanager
-collection = db.tasks
 
 
 class TaskCreate(BaseModel):

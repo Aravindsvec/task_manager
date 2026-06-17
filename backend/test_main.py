@@ -13,6 +13,7 @@ from main import app
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 transport = ASGITransport(app=app)
+TEST_DB = "test_taskmanager"
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
@@ -21,9 +22,10 @@ async def init_motor():
         os.getenv("MONGO_URL", "mongodb://localhost:27017")
     )
     main_module.client = mongo_client
-    main_module.db = mongo_client.taskmanager
-    main_module.collection = mongo_client.taskmanager.tasks
+    main_module.db = mongo_client[TEST_DB]
+    main_module.collection = mongo_client[TEST_DB].tasks
     yield
+    await mongo_client[TEST_DB].drop_collection("tasks")
     mongo_client.close()
 
 
