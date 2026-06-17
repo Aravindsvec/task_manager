@@ -6,7 +6,7 @@ from main import app
 transport = ASGITransport(app=app)
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="session")
 async def client():
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
