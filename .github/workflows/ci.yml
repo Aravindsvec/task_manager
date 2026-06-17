@@ -42,20 +42,11 @@ jobs:
     name: Build & Push to Docker Hub
     runs-on: ubuntu-latest
     needs: test
-    # Only push on direct pushes to main, not on pull requests
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Debug secret lengths
-        run: |
-          echo "USERNAME length: ${#UNAME}"
-          echo "TOKEN length: ${#TOKEN}"
-        env:
-          UNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -92,7 +83,7 @@ jobs:
     name: Docker Compose Smoke Test
     runs-on: ubuntu-latest
     needs: test
-    # Run on PRs too — just don't push images
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

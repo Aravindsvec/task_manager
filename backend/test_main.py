@@ -8,9 +8,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import main as main_module
 from main import app
 
-# Make every async test in this module share the session event loop.
-# Motor's connection pool binds to the loop it first uses; mixing per-function
-# loops causes "Event loop is closed" when a cursor needs run_in_executor.
+# All tests share one session loop so motor's connection pool
+# doesn't bind to a function-scoped loop that gets closed mid-suite.
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 transport = ASGITransport(app=app)
@@ -18,12 +17,6 @@ transport = ASGITransport(app=app)
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def init_motor():
-    """Create the motor client inside the session event loop.
-
-    The module-level AsyncIOMotorClient in main.py is built at import time,
-    before pytest-asyncio establishes its session loop. Re-creating it here
-    ensures motor always operates on the correct loop.
-    """
     mongo_client = AsyncIOMotorClient(
         os.getenv("MONGO_URL", "mongodb://localhost:27017")
     )

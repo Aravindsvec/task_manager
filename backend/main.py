@@ -1,14 +1,13 @@
+import os
+
+from bson import ObjectId
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
-from bson import ObjectId
-from typing import Optional
-import os
 
 app = FastAPI(title="Task Manager API")
 
-# Allow frontend to talk to backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,14 +15,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client.taskmanager
 collection = db.tasks
 
 
-# --- Models ---
 class TaskCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: str = ""
@@ -46,7 +43,6 @@ def task_to_dict(task) -> dict:
     }
 
 
-# --- Routes ---
 @app.get("/")
 async def root():
     return {"message": "Task Manager API is running"}
