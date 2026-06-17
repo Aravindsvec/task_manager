@@ -1,9 +1,37 @@
+import os
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
+from motor.motor_asyncio import AsyncIOMotorClient
+
+import main as main_module
 from main import app
 
+# Make every async test in this module share the session event loop.
+# Motor's connection pool binds to the loop it first uses; mixing per-function
+# loops causes "Event loop is closed" when a cursor needs run_in_executor.
+pytestmark = pytest.mark.asyncio(loop_scope="session")
+
 transport = ASGITransport(app=app)
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def init_motor():
+    """Create the motor client inside the session event loop.
+
+    The module-level AsyncIOMotorClient in main.py is built at import time,
+    before pytest-asyncio establishes its session loop. Re-creating it here
+    ensures motor always operates on the correct loop.
+    """
+    mongo_client = AsyncIOMotorClient(
+        os.getenv("MONGO_URL", "mongodb://localhost:27017")
+    )
+    main_module.client = mongo_client
+    main_module.db = mongo_client.taskmanager
+    main_module.collection = mongo_client.taskmanager.tasks
+    yield
+    mongo_client.close()
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -12,14 +40,12 @@ async def client():
         yield c
 
 
-@pytest.mark.asyncio
 async def test_root(client):
     response = await client.get("/")
     assert response.status_code == 200
     assert response.json()["message"] == "Task Manager API is running"
 
 
-@pytest.mark.asyncio
 async def test_create_task(client):
     response = await client.post("/tasks", json={
         "title": "Test Task",
@@ -32,7 +58,6 @@ async def test_create_task(client):
     assert "id" in data
 
 
-@pytest.mark.asyncio
 async def test_get_tasks(client):
     response = await client.get("/tasks")
     assert response.status_code == 200
