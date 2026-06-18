@@ -1,0 +1,180 @@
+========================================================
+  END-TO-END DEMO: Code Change → Local Test → Push → Pull
+========================================================
+
+SCENARIO: Change the accent colour in CSS, verify it locally,
+push to GitHub, CI builds & pushes to Docker Hub,
+then pull the published image and run it.
+
+--------------------------------------------------------
+STEP 1 — Make a visible code change (CSS colour)
+--------------------------------------------------------
+
+Open:  frontend/static/style.css
+
+Find this line (around line 30):
+    color: #f59e0b;          ← amber/orange (h1 title colour)
+
+Change it to any colour you like, e.g.:
+    color: #6366f1;          ← indigo/purple
+    color: #10b981;          ← green
+    color: #ef4444;          ← red
+    color: #f59e0b;          ← back to original amber
+
+Save the file.
+
+--------------------------------------------------------
+STEP 2 — Build locally with Docker Compose
+--------------------------------------------------------
+
+# Rebuild only the frontend image (CSS lives there)
+docker compose build frontend
+
+# Start the full stack
+docker compose up -d
+
+# Confirm all three containers are running
+docker compose ps
+
+--------------------------------------------------------
+STEP 3 — Verify the change in the browser
+--------------------------------------------------------
+
+Open:  http://localhost:3000
+
+You should see the new colour in the page title.
+Also open:  http://localhost:8000/docs
+(Swagger UI — shows the API is live)
+
+--------------------------------------------------------
+STEP 4 — Quick API smoke check (optional but impressive)
+--------------------------------------------------------
+
+# Health check
+curl http://localhost:8000/
+
+# Create a task
+curl -X POST http://localhost:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d "{\"title\": \"Demo task\", \"priority\": \"high\", \"due_date\": \"\", \"description\": \"\", \"done\": false}"
+
+# List tasks
+curl http://localhost:8000/tasks
+
+--------------------------------------------------------
+STEP 5 — Stop the local stack
+--------------------------------------------------------
+
+docker compose down
+
+--------------------------------------------------------
+STEP 6 — Commit and push to GitHub
+--------------------------------------------------------
+
+git add frontend/static/style.css
+
+git commit -m "Change accent colour to indigo for demo"
+
+git push origin main
+
+--------------------------------------------------------
+STEP 7 — Watch CI run on GitHub
+--------------------------------------------------------
+
+Open your browser:
+https://github.com/Aravindsvec/task_manager/actions
+
+You will see a new workflow run triggered.
+Three jobs run in order:
+  ✅ Run Tests          (pytest against live MongoDB)
+  ✅ Docker Compose Smoke Test  (builds + curls health endpoints)
+  ✅ Build & Push to Docker Hub (pushes :latest and :<git-sha>)
+
+Wait for all three to go green (~2-3 minutes).
+
+--------------------------------------------------------
+STEP 8 — Pull the published image from Docker Hub
+--------------------------------------------------------
+
+# Remove local images so you're definitely pulling from Hub
+docker rmi task-manager1-frontend -f
+docker rmi aravind456/task-manager-frontend -f
+
+# Pull the freshly pushed image
+docker pull aravind456/task-manager-backend:latest
+docker pull aravind456/task-manager-frontend:latest
+
+# Confirm the images came from Hub
+docker images | findstr task-manager
+
+--------------------------------------------------------
+STEP 9 — Run the stack from Hub images (no source code)
+--------------------------------------------------------
+
+# Start MongoDB
+docker run -d --name demo-mongo mongo:7
+
+# Wait ~5 seconds for Mongo to start, then:
+
+# Start backend using Hub image
+docker run -d --name demo-backend \
+  --link demo-mongo:mongo \
+  -e MONGO_URL=mongodb://mongo:27017 \
+  -p 8000:8000 \
+  aravind456/task-manager-backend:latest
+
+# Start frontend using Hub image
+docker run -d --name demo-frontend \
+  -p 3000:80 \
+  aravind456/task-manager-frontend:latest
+
+--------------------------------------------------------
+STEP 10 — Verify the Hub image is running with the new colour
+--------------------------------------------------------
+
+Open:  http://localhost:3000
+
+The title should show the new colour you changed in Step 1.
+This image was built by GitHub Actions and pulled from Docker Hub —
+not built on this machine.
+
+Open:  http://localhost:8000/docs
+(confirms the backend from Hub is also live)
+
+--------------------------------------------------------
+STEP 11 — Clean up
+--------------------------------------------------------
+
+docker rm -f demo-mongo demo-backend demo-frontend
+
+========================================================
+  WHAT THIS PROVES (talk track for demo)
+========================================================
+
+1. The app has three containers: frontend (Nginx), backend
+   (FastAPI), database (MongoDB) — all defined in docker-compose.yml
+
+2. A one-line CSS change triggers the full pipeline:
+   git push → GitHub Actions → pytest → smoke test → Docker Hub
+
+3. The published image can be pulled and run anywhere with no
+   source code — just docker pull + docker run
+
+4. The health check dependency chain ensures MongoDB is ready
+   before the backend starts (no race conditions)
+
+5. Live Swagger docs at /docs are auto-generated by FastAPI —
+   no extra work needed
+
+========================================================
+  QUICK REFERENCE — URLs
+========================================================
+
+Frontend app    →  http://localhost:3000
+API health      →  http://localhost:8000/
+API task list   →  http://localhost:8000/tasks
+Swagger UI      →  http://localhost:8000/docs
+GitHub Actions  →  https://github.com/Aravindsvec/task_manager/actions
+Docker Hub      →  https://hub.docker.com/u/aravind456
+
+========================================================
