@@ -41,6 +41,10 @@
       <button class="filter-btn" onclick="setFilter('done', this)">Done</button>
     </div>
 
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search tasks..." oninput="setSearch(this.value)" />
+    </div>
+
     <ul class="task-list" id="taskList"></ul>
   </div>
 
