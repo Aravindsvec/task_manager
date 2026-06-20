@@ -3,6 +3,7 @@ const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 
 let allTasks = [];
 let currentFilter = 'all';
+let searchTerm = '';
 
 async function loadTasks() {
   try {
@@ -19,10 +20,19 @@ function getFilteredTasks() {
   let tasks = allTasks;
   if (currentFilter === 'active') tasks = allTasks.filter(t => !t.done);
   if (currentFilter === 'done')   tasks = allTasks.filter(t => t.done);
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    tasks = tasks.filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q));
+  }
   return [...tasks].sort((a, b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
     return (PRIORITY_ORDER[a.priority] ?? 1) - (PRIORITY_ORDER[b.priority] ?? 1);
   });
+}
+
+function setSearch(value) {
+  searchTerm = value.trim();
+  renderTasks();
 }
 
 function renderTasks() {
