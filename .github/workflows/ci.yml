@@ -65,9 +65,9 @@ jobs: # all the jobs this workflow runs
         with:
           context: ./backend # use the backend folder as the Docker build context
           push: true # actually push to Docker Hub (false would just build locally)
-          tags: | # two tags so you can use latest or roll back to a specific commit
-            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-backend:latest # always points to newest image
-            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-backend:${{ github.sha }} # unique tag per commit hash
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-backend:${{ github.sha }}
           cache-from: type=gha # read build cache from GitHub Actions cache
           cache-to: type=gha,mode=max # write build cache back so next run is faster
 
@@ -77,8 +77,8 @@ jobs: # all the jobs this workflow runs
           context: ./frontend # use the frontend folder as the Docker build context
           push: true # push to Docker Hub
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-frontend:latest # latest frontend image
-            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-frontend:${{ github.sha }} # commit-pinned frontend image
+            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/task-manager-frontend:${{ github.sha }}
           cache-from: type=gha # read from cache
           cache-to: type=gha,mode=max # write to cache
 
