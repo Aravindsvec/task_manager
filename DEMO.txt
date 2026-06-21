@@ -2,8 +2,8 @@
   DEMO COMMANDS - Task Manager
 ===================================================
 
-DOCKER HUB REPO : aravindsvec/task-manager-backend
-                  aravindsvec/task-manager-frontend
+DOCKER HUB REPO : Aravindsvec456/task-manager-backend
+                  Aravindsvec456/task-manager-frontend
 
 ===================================================
  PART 1 : MAIN BRANCH - Make change & push
@@ -33,8 +33,8 @@ git push origin feature/demo-branch
  PART 3 : PULL FROM DOCKER HUB & RUN
 ===================================================
 
-docker pull aravindsvec/task-manager-backend:latest
-docker pull aravindsvec/task-manager-frontend:latest
+docker pull Aravindsvec456/task-manager-backend:latest
+docker pull Aravindsvec456/task-manager-frontend:latest
 
 docker compose up -d
 
