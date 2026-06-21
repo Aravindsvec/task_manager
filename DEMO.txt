@@ -26,7 +26,12 @@ git add .
 git commit -m "demo: update from feature branch"
 git push origin feature/demo-branch
 
--- Go to GitHub and merge Pull Request to main --
+-- Merge into main --
+
+git checkout main
+git merge feature/demo-branch
+git push origin main
+
 -- GitHub Actions builds and pushes to Docker Hub --
 
 ===================================================
