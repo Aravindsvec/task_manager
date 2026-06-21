@@ -39,7 +39,7 @@ h1 {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f59e0b 0%, #10b981 100%);
+  background: linear-gradient(90deg, #facc15 0%, #10b981 100%);
   border-radius: 3px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   width: 0%;
@@ -77,7 +77,7 @@ input[type="text"] {
 
 input[type="text"]:focus,
 input[type="date"]:focus,
-select:focus { outline: 2px solid #f59e0b; border-color: transparent; }
+select:focus { outline: 2px solid #facc15; border-color: transparent; }
 
 .priority-select,
 .date-input {
@@ -102,12 +102,12 @@ button {
 
 .btn-add {
   padding: 0.7rem 1.25rem;
-  background: #f59e0b;
+  background: #22c55e;
   color: #0f172a;
   font-size: 0.95rem;
   white-space: nowrap;
 }
-.btn-add:hover { background: #d97706; }
+.btn-add:hover { background: #16a34a; }
 
 /* ── Filter tabs ── */
 .filters {
@@ -139,7 +139,7 @@ button {
 .filter-btn.active {
   background: #1e293b;
   color: #e2e8f0;
-  border-color: #f59e0b;
+  border-color: #facc15;
 }
 .filter-btn:hover:not(.active) {
   border-color: #475569;
@@ -169,7 +169,7 @@ button {
 }
 
 .task-item.priority-high   { border-left-color: #ef4444; }
-.task-item.priority-medium { border-left-color: #f59e0b; }
+.task-item.priority-medium { border-left-color: #facc15; }
 .task-item.priority-low    { border-left-color: #22c55e; }
 
 .task-item.done { opacity: 0.45; }
@@ -178,7 +178,7 @@ button {
 input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #f59e0b;
+  accent-color: #facc15;
   cursor: pointer;
   flex-shrink: 0;
 }
