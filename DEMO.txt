@@ -1,0 +1,49 @@
+===================================================
+  DEMO COMMANDS - Task Manager
+===================================================
+
+DOCKER HUB REPO : aravindsvec/task-manager-backend
+                  aravindsvec/task-manager-frontend
+
+===================================================
+ PART 1 : MAIN BRANCH - Make change & push
+===================================================
+
+git checkout main
+git add .
+git commit -m "demo: update from main branch"
+git push origin main
+
+-- GitHub Actions runs automatically --
+-- Builds and pushes image to Docker Hub --
+
+===================================================
+ PART 2 : NEW BRANCH - Create branch & push
+===================================================
+
+git checkout -b feature/demo-branch
+git add .
+git commit -m "demo: update from feature branch"
+git push origin feature/demo-branch
+
+-- Go to GitHub and merge Pull Request to main --
+-- GitHub Actions builds and pushes to Docker Hub --
+
+===================================================
+ PART 3 : PULL FROM DOCKER HUB & RUN
+===================================================
+
+docker pull aravindsvec/task-manager-backend:latest
+docker pull aravindsvec/task-manager-frontend:latest
+
+docker compose up -d
+
+-- App running at: http://localhost:3000 --
+
+===================================================
+ STOP APP
+===================================================
+
+docker compose down
+
+===================================================
