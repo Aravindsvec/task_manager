@@ -52,3 +52,14 @@ docker compose up -d
 docker compose down
 
 ===================================================
+
+
+
+# Pull latest images from Docker Hub
+docker compose -f hub.yml pull
+
+# Start all services
+docker compose -f hub.yml up -d
+
+# Pull + restart in one go (force fresh containers)
+docker compose -f hub.yml pull && docker compose -f hub.yml up -d --force-recreate
